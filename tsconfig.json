@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    /* ===== Core Settings ===== */
+    "target": "ES2020",                        // Modern JS target
+    "module": "commonjs",                      // Node.js compatible modules
+    "rootDir": ".",                            // Root directory (current folder)
+    "outDir": "./dist",                        // Compiled JS output
+
+    /* ===== Interop & Module Settings ===== */
+    "esModuleInterop": true,                   // Enables import compatibility
+    "allowSyntheticDefaultImports": true,      // Allow default imports from non-ESM modules
+    "moduleResolution": "node",                // Node-style module resolution
+    "resolveJsonModule": true,                 // Enable importing JSON files
+    "forceConsistentCasingInFileNames": true,  // Enforce case sensitivity in imports
+
+    /* ===== Type Checking ===== */
+    "strict": true,                            // Enable all strict type checks
+    "noImplicitAny": true,                     // Prevent implicit 'any' types
+    "skipLibCheck": true,                      // Skip type checking for libs
+
+    /* ===== Decorators & Metadata ===== */
+    "experimentalDecorators": true,            // Enable decorators
+    "emitDecoratorMetadata": true,             // Emit metadata (useful for DI frameworks)
+
+    /* ===== Output Behavior ===== */
+    "sourceMap": true,                         // Generate source maps for debugging
+    "removeComments": true,                    // Remove comments in compiled JS
+    "noEmitOnError": true                      // Don't output files if there are errors
+  },
+  "include": [
+    "**/*.ts",                                // Include all TypeScript files in the project
+    "server.ts"                               // Explicitly include the main entry point
+  ],
+  "exclude": [
+    "node_modules",                           // Skip dependencies
+    "dist",                                   // Skip build output
+    "**/*.test.ts"                            // Skip test files (optional)
+  ]
+}

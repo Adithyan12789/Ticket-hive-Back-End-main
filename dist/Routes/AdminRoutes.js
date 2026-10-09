@@ -1,0 +1,55 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const AdminAuthMiddleware_1 = require("../Middlewares/AdminAuthMiddleware");
+const TheaterMulter_1 = __importDefault(require("../Config/Multer/TheaterMulter"));
+const MovieMulter_1 = __importDefault(require("../Config/Multer/MovieMulter"));
+const container_1 = require("../Config/container");
+const CastMulter_1 = __importDefault(require("../Config/Multer/CastMulter"));
+const router = express_1.default.Router();
+const adminController = container_1.container.get("AdminController");
+const theaterControllerr = container_1.container.get("TheaterController");
+const bookingControllerr = container_1.container.get("BookingController");
+const chatControllerr = container_1.container.get("ChatController");
+const movieControllerr = container_1.container.get("MovieController");
+const castController = container_1.container.get("CastController");
+router.post('/admin-login', adminController.adminLogin);
+router.get('/get-user', AdminAuthMiddleware_1.AdminAuthMiddleware.protect, adminController.getAllUsers);
+router.get('/get-theaterOwners', AdminAuthMiddleware_1.AdminAuthMiddleware.protect, adminController.getAllTheaterOwners);
+router.patch('/block-user', AdminAuthMiddleware_1.AdminAuthMiddleware.protect, adminController.blockUserController);
+router.patch('/unblock-user', AdminAuthMiddleware_1.AdminAuthMiddleware.protect, adminController.unblockUserController);
+router.patch('/block-theaterOwner', AdminAuthMiddleware_1.AdminAuthMiddleware.protect, adminController.blockTheaterOwnerController);
+router.patch('/unblock-theaterOwner', AdminAuthMiddleware_1.AdminAuthMiddleware.protect, adminController.unblockTheaterOwnerController);
+router.get('/verification', AdminAuthMiddleware_1.AdminAuthMiddleware.protect, adminController.getVerificationDetails);
+router.put('/verification/:theaterId/accept', AdminAuthMiddleware_1.AdminAuthMiddleware.protect, adminController.acceptVerification);
+router.put('/verification/:adminId/reject', AdminAuthMiddleware_1.AdminAuthMiddleware.protect, adminController.rejectVerification);
+router.post('/add-movie', MovieMulter_1.default.multerUploadMultipleFields, (req, res, next) => {
+    next();
+}, (req, res) => movieControllerr.addMovieController(req, res));
+router.get('/get-movies', AdminAuthMiddleware_1.AdminAuthMiddleware.protect, (req, res) => movieControllerr.getAllMoviesController(req, res));
+router.get('/movie-details/:id', AdminAuthMiddleware_1.AdminAuthMiddleware.protect, (req, res) => movieControllerr.getMovieByIdHandler(req, res));
+router.put('/movie-edit/:id', MovieMulter_1.default.multerUploadMultipleFields, (req, res, next) => {
+    next();
+}, (req, res) => movieControllerr.updateMovieHandler(req, res));
+router.delete('/movie-delete/:id', AdminAuthMiddleware_1.AdminAuthMiddleware.protect, (req, res) => movieControllerr.deleteMovieHandler(req, res));
+router.get('/getAlltickets', AdminAuthMiddleware_1.AdminAuthMiddleware.protect, adminController.getAllTickets);
+router.get("/get-ticketDetail/:bookingId", AdminAuthMiddleware_1.AdminAuthMiddleware.protect, bookingControllerr.getBookingDetails);
+router.put("/tickets/:ticketId", AdminAuthMiddleware_1.AdminAuthMiddleware.protect, bookingControllerr.updateTicket);
+router.get("/theater/:theaterId/bookings", AdminAuthMiddleware_1.AdminAuthMiddleware.protect, bookingControllerr.getTheaterBookings);
+router.patch('/statusChange/:bookingId', AdminAuthMiddleware_1.AdminAuthMiddleware.protect, bookingControllerr.updateBookingStatus);
+router.get('/get-theaterOwners', AdminAuthMiddleware_1.AdminAuthMiddleware.protect, theaterControllerr.getTheaterOwners);
+router.get('/chatrooms/:adminId', AdminAuthMiddleware_1.AdminAuthMiddleware.protect, chatControllerr.getAdminChatRooms);
+router.route('/chatrooms/:chatRoomId/messages').get(AdminAuthMiddleware_1.AdminAuthMiddleware.protect, chatControllerr.getAdminMessages).post(TheaterMulter_1.default.multerUploadChatFiles.single('file'), AdminAuthMiddleware_1.AdminAuthMiddleware.protect, chatControllerr.sendAdminMessage);
+router.route('/mark-messages-read').post(AdminAuthMiddleware_1.AdminAuthMiddleware.protect, chatControllerr.markAdminMessagesAsRead);
+router.get('/notifications/unread', AdminAuthMiddleware_1.AdminAuthMiddleware.protect, chatControllerr.getAdminUnreadMessages);
+router.put('/notifications/:id/read', AdminAuthMiddleware_1.AdminAuthMiddleware.protect, chatControllerr.markAdminMessagesAsRead);
+router.post('/add-cast', AdminAuthMiddleware_1.AdminAuthMiddleware.protect, CastMulter_1.default.uploadCastImage, (req, res) => castController.addCast(req, res));
+router.get('/get-cast', AdminAuthMiddleware_1.AdminAuthMiddleware.protect, (req, res) => castController.getAllCast(req, res));
+router.put('/update-cast/:id', AdminAuthMiddleware_1.AdminAuthMiddleware.protect, CastMulter_1.default.uploadCastImage, (req, res) => castController.updateCast(req, res));
+router.delete('/delete-cast/:id', AdminAuthMiddleware_1.AdminAuthMiddleware.protect, (req, res) => castController.deleteCast(req, res));
+router.post('/admin-logout', adminController.adminLogout);
+exports.default = router;
+//# sourceMappingURL=AdminRoutes.js.map

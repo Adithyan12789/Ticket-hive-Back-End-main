@@ -1,0 +1,53 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+require("reflect-metadata");
+const AuthMiddleware_1 = require("../Middlewares/AuthMiddleware");
+const UserMulter_1 = __importDefault(require("../Config/Multer/UserMulter"));
+const container_1 = require("../Config/container");
+const router = express_1.default.Router();
+const userControllerr = container_1.container.get("UserController");
+const theaterControllerr = container_1.container.get("TheaterController");
+const bookingControllerr = container_1.container.get("BookingController");
+const notificationControllerr = container_1.container.get("NotificationController");
+const movieController = container_1.container.get("MovieController");
+const reviewControllerr = container_1.container.get("ReviewController");
+const walletControllerr = container_1.container.get("WalletController");
+const screenControllerr = container_1.container.get("ScreenController");
+router.post('/auth', userControllerr.authUser);
+router.post('/googleLogin', userControllerr.googleLogin);
+router.post('/sign-up', userControllerr.registerUser);
+router.post('/verifyotp', userControllerr.verifyOTP);
+router.post('/resend-otp', userControllerr.resendOtp);
+router.post('/forgot-password', userControllerr.forgotPassword);
+router.put('/reset-password/:token', userControllerr.resetPassword);
+router.post('/refresh-token', userControllerr.refreshToken);
+router.post('/save-location', AuthMiddleware_1.AuthMiddleware, userControllerr.saveLocationController);
+router.route('/profile')
+    .get(AuthMiddleware_1.AuthMiddleware, userControllerr.getUserProfile)
+    .put(AuthMiddleware_1.AuthMiddleware, UserMulter_1.default.multerUploadUserProfile.single('profileImage'), userControllerr.updateUserProfile);
+router.get('/get-movies', (req, res) => movieController.getAllMoviesController(req, res));
+router.get('/movie-detail/:id', (req, res) => movieController.getMovieByIdHandler(req, res));
+router.get('/reviews/:movieId', reviewControllerr.getReviewsController);
+router.get('/allReviews', reviewControllerr.getAllReviewsController);
+router.post('/reviews', AuthMiddleware_1.AuthMiddleware, reviewControllerr.addReviewsController);
+router.put('/reviews/:reviewId/vote', AuthMiddleware_1.AuthMiddleware, reviewControllerr.voteReviewController);
+router.get('/movie-theaters/:movieTitle', theaterControllerr.getTheatersByMovieTitle);
+router.get('/screen/:screenId', screenControllerr.getScreensById);
+router.post('/update-availability', AuthMiddleware_1.AuthMiddleware, screenControllerr.updateSeatAvailability);
+router.get('/offers/:theaterId', userControllerr.getOffersByTheaterId);
+router.post('/book-ticket', AuthMiddleware_1.AuthMiddleware, bookingControllerr.createBooking);
+router.get('/get-tickets/:userId', AuthMiddleware_1.AuthMiddleware, bookingControllerr.getAllTickets);
+router.get("/tickets/:ticketId", AuthMiddleware_1.AuthMiddleware, bookingControllerr.getTicketDetails);
+router.post('/cancel-ticket/:bookingId', AuthMiddleware_1.AuthMiddleware, bookingControllerr.cancelTicket);
+router.get('/notifications/unread', AuthMiddleware_1.AuthMiddleware, notificationControllerr.getUnreadNotifications);
+router.put('/notifications/:id/read', AuthMiddleware_1.AuthMiddleware, notificationControllerr.markNotificationAsRead);
+router.delete('/clearNotifications', AuthMiddleware_1.AuthMiddleware, notificationControllerr.clearNotifications);
+router.post('/create-wallet-transaction', AuthMiddleware_1.AuthMiddleware, walletControllerr.addMoneyToWallet);
+router.get('/transaction-history/:userId', AuthMiddleware_1.AuthMiddleware, walletControllerr.getTransactionHistory);
+router.post('/logout', userControllerr.logoutUser);
+exports.default = router;
+//# sourceMappingURL=UserRoutes.js.map
