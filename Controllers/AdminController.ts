@@ -1,3 +1,5 @@
+//AdminController
+
 import asyncHandler from "express-async-handler";
 import { inject, injectable } from "inversify";
 import { NextFunction, Request, Response } from "express";
