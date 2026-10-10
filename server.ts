@@ -38,7 +38,8 @@ app.use(cors({
   origin: (origin, callback) => {
     const allowedOrigins = [
       "http://localhost:3000",
-      "http://ticket-hive-main.vercel.app"
+      "https://ticket-hive-main.vercel.app",
+      "https://www.ticket-hive-main.vercel.app"
     ];
 
     // Allow requests with no origin (like mobile apps or curl requests)
