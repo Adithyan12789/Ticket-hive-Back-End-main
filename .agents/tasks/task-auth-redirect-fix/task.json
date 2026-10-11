@@ -1,0 +1,7 @@
+{
+  "task_id": "task-auth-redirect-fix",
+  "task_description": "Fix authentication redirect issue where logged-in users are redirected to login when accessing movie details page on live deployment",
+  "status": "pending",
+  "feature_order": ["FEAT-001", "FEAT-002"],
+  "blocked_reason": null
+}
