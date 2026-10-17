@@ -17,13 +17,15 @@ class TheaterTokenService {
     }
 
     public generateTheaterToken(res: Response, theaterOwnerId: string): string {
+        const isProduction = process.env.NODE_ENV === 'production';
         const token = jwt.sign({ id: theaterOwnerId }, this.jwtSecret, { expiresIn: '30d' });
 
         res.cookie('theaterOwnerJwt', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Use 'none' for cross-site in production
+            secure: isProduction,
+            sameSite: isProduction ? 'none' : 'lax',
             maxAge: 30 * 24 * 60 * 60 * 1000,
+            path: '/',
         });
 
         return token;

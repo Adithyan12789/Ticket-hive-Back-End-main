@@ -29,22 +29,29 @@ class TokenService {
     accessToken: string,
     refreshToken: string
   ): void {
+    const isProduction = process.env.NODE_ENV === "production";
+    
+    console.log("Setting cookies with NODE_ENV:", process.env.NODE_ENV);
+    console.log("Cookie settings - secure:", isProduction, "sameSite:", isProduction ? "none" : "lax");
 
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV !== "development",
-      sameSite: process.env.NODE_ENV === "development" ? "strict" : "none",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       maxAge: 15 * 60 * 1000, // 15 minutes
+      path: "/",
     });
   
     // Set refresh token cookie
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV !== "development",
-      sameSite: process.env.NODE_ENV === "development" ? "strict" : "none",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: "/",
     });
   
+    console.log("Cookies set successfully");
   }
   
 

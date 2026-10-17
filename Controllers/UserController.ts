@@ -28,12 +28,15 @@ export class UserController {
     try {
       const { accessToken } = await this.userService.refreshToken(refreshToken);
 
+      const isProduction = process.env.NODE_ENV === "production";
+      
       // Set the new access token in cookies
       res.cookie("accessToken", accessToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV !== "development",
-        sameSite: process.env.NODE_ENV === "development" ? "strict" : "none",
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
         maxAge: 15 * 60 * 1000, // 15 minutes
+        path: "/",
       });
 
       res.status(200).json({ message: "Token refreshed successfully" });
@@ -453,20 +456,24 @@ export class UserController {
       // Optionally, you can perform any other cleanup actions related to the user session here
       await this.userService.logoutUserService();
 
+      const isProduction = process.env.NODE_ENV === "production";
+
       // Clear the access token cookie
       res.cookie("accessToken", "", {
         httpOnly: true,
-        secure: process.env.NODE_ENV !== "development",
-        sameSite: process.env.NODE_ENV === "development" ? "strict" : "none",
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
         expires: new Date(0),
+        path: "/",
       });
 
       // Clear the refresh token cookie
       res.cookie("refreshToken", "", {
         httpOnly: true,
-        secure: process.env.NODE_ENV !== "development",
-        sameSite: process.env.NODE_ENV === "development" ? "strict" : "none",
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
         expires: new Date(0),
+        path: "/",
       });
 
       res.status(200).json({ message: "User Logged out" });

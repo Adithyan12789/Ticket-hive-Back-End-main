@@ -33,6 +33,25 @@ router.put('/reset-password/:token', userControllerr.resetPassword);
 
 router.post('/refresh-token', userControllerr.refreshToken);
 
+// Debug endpoint to check authentication status
+router.get('/auth-status', (req, res) => {
+  const cookies = req.cookies;
+  const hasAccessToken = !!cookies?.accessToken;
+  const hasRefreshToken = !!cookies?.refreshToken;
+  
+  res.json({
+    authenticated: hasAccessToken || hasRefreshToken,
+    hasAccessToken,
+    hasRefreshToken,
+    nodeEnv: process.env.NODE_ENV,
+    cookieNames: Object.keys(cookies || {}),
+    headers: {
+      origin: req.headers.origin,
+      cookie: req.headers.cookie ? 'present' : 'missing'
+    }
+  });
+});
+
 router.post('/save-location', AuthMiddleware, userControllerr.saveLocationController);
 
 router.route('/profile')

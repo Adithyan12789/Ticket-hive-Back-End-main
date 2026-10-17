@@ -283,11 +283,14 @@ export class AdminService {
   }
 
   public async adminLogoutService(res: Response) {
+    const isProduction = process.env.NODE_ENV === "production";
+    
     res.cookie("token", "", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: isProduction,
       expires: new Date(0),
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      sameSite: isProduction ? "none" : "lax",
+      path: "/",
     });
     return { message: "Admin logged out successfully" };
   }

@@ -671,11 +671,14 @@ export class TheaterController {
   logoutTheaterOwner = asyncHandler(
     async (req: Request, res: Response): Promise<void> => {
       await this.theaterService.logoutTheaterOwnerService();
+      const isProduction = process.env.NODE_ENV === "production";
+      
       res.cookie("theaterOwnerJwt", "", {
         httpOnly: true,
-        secure: process.env.NODE_ENV !== "development",
-        sameSite: process.env.NODE_ENV === "development" ? "strict" : "none",
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
         expires: new Date(0),
+        path: "/",
       });
       res.status(200).json({ message: "Theater Owner Logged out" });
     }
