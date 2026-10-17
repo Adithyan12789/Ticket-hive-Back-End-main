@@ -32,11 +32,13 @@ let UserController = class UserController {
             }
             try {
                 const { accessToken } = await this.userService.refreshToken(refreshToken);
+                const isProduction = process.env.NODE_ENV === "production";
                 res.cookie("accessToken", accessToken, {
                     httpOnly: true,
-                    secure: process.env.NODE_ENV !== "development",
-                    sameSite: "strict",
+                    secure: isProduction,
+                    sameSite: isProduction ? "none" : "lax",
                     maxAge: 15 * 60 * 1000,
+                    path: "/",
                 });
                 res.status(200).json({ message: "Token refreshed successfully" });
             }
@@ -364,17 +366,20 @@ let UserController = class UserController {
         });
         this.logoutUser = (0, express_async_handler_1.default)(async (req, res) => {
             await this.userService.logoutUserService();
+            const isProduction = process.env.NODE_ENV === "production";
             res.cookie("accessToken", "", {
                 httpOnly: true,
-                secure: process.env.NODE_ENV !== "development",
-                sameSite: "strict",
+                secure: isProduction,
+                sameSite: isProduction ? "none" : "lax",
                 expires: new Date(0),
+                path: "/",
             });
             res.cookie("refreshToken", "", {
                 httpOnly: true,
-                secure: process.env.NODE_ENV !== "development",
-                sameSite: "strict",
+                secure: isProduction,
+                sameSite: isProduction ? "none" : "lax",
                 expires: new Date(0),
+                path: "/",
             });
             res.status(200).json({ message: "User Logged out" });
         });

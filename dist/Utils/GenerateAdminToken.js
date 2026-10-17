@@ -16,11 +16,12 @@ class AdminTokenService {
         const token = jsonwebtoken_1.default.sign({ adminId }, this.jwtSecret, {
             expiresIn: '30d',
         });
+        const isProduction = process.env.NODE_ENV === 'production';
         console.log("AdminTokenService: Setting cookie 'jwtAdmin'");
         res.cookie('jwtAdmin', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
+            secure: isProduction,
+            sameSite: isProduction ? 'none' : 'lax',
             maxAge: 30 * 24 * 60 * 60 * 1000,
             path: '/',
         });

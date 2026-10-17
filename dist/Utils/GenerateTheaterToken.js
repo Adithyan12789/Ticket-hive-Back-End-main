@@ -15,12 +15,14 @@ class TheaterTokenService {
         console.log("this.jwtSecret: ", this.jwtSecret);
     }
     generateTheaterToken(res, theaterOwnerId) {
+        const isProduction = process.env.NODE_ENV === 'production';
         const token = jsonwebtoken_1.default.sign({ id: theaterOwnerId }, this.jwtSecret, { expiresIn: '30d' });
         res.cookie('theaterOwnerJwt', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+            secure: isProduction,
+            sameSite: isProduction ? 'none' : 'lax',
             maxAge: 30 * 24 * 60 * 60 * 1000,
+            path: '/',
         });
         return token;
     }

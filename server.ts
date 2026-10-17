@@ -36,8 +36,7 @@ const port = process.env.PORT || 5000;
 
 app.use(cors({
   origin: (origin, callback) => {
-    const allowedOrigins = [
-      "http://localhost:3000",
+    const allowedProductionOrigins = [
       "https://ticket-hive-main.vercel.app",
       "https://www.ticket-hive-main.vercel.app"
     ];
@@ -48,7 +47,12 @@ app.use(cors({
     // Remove trailing slash for comparison
     const normalizedOrigin = origin.replace(/\/$/, '');
 
-    if (allowedOrigins.includes(normalizedOrigin)) {
+    // Allow any localhost port in development (Vite may pick 3000, 3001, etc.)
+    if (/^http:\/\/localhost(:\d+)?$/.test(normalizedOrigin)) {
+      return callback(null, true);
+    }
+
+    if (allowedProductionOrigins.includes(normalizedOrigin)) {
       callback(null, true);
     } else {
       console.warn(`CORS blocked origin: ${origin}`);

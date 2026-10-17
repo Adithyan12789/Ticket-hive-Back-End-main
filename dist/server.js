@@ -33,14 +33,17 @@ EmailUtil_1.default.verifyConnection().catch((err) => {
 const port = process.env.PORT || 5000;
 Socket_1.app.use((0, cors_1.default)({
     origin: (origin, callback) => {
-        const allowedOrigins = [
-            "http://localhost:3000",
-            "https://ticket-hive-awft.vercel.app"
+        const allowedProductionOrigins = [
+            "https://ticket-hive-main.vercel.app",
+            "https://www.ticket-hive-main.vercel.app"
         ];
         if (!origin)
             return callback(null, true);
         const normalizedOrigin = origin.replace(/\/$/, '');
-        if (allowedOrigins.includes(normalizedOrigin)) {
+        if (/^http:\/\/localhost(:\d+)?$/.test(normalizedOrigin)) {
+            return callback(null, true);
+        }
+        if (allowedProductionOrigins.includes(normalizedOrigin)) {
             callback(null, true);
         }
         else {

@@ -507,11 +507,13 @@ let TheaterController = class TheaterController {
         });
         this.logoutTheaterOwner = (0, express_async_handler_1.default)(async (req, res) => {
             await this.theaterService.logoutTheaterOwnerService();
+            const isProduction = process.env.NODE_ENV === "production";
             res.cookie("theaterOwnerJwt", "", {
                 httpOnly: true,
-                secure: process.env.NODE_ENV !== "development",
-                sameSite: "strict",
+                secure: isProduction,
+                sameSite: isProduction ? "none" : "lax",
                 expires: new Date(0),
+                path: "/",
             });
             res.status(200).json({ message: "Theater Owner Logged out" });
         });

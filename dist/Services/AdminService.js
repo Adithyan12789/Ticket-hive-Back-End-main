@@ -214,11 +214,13 @@ let AdminService = class AdminService {
         return admins;
     }
     async adminLogoutService(res) {
+        const isProduction = process.env.NODE_ENV === "production";
         res.cookie("token", "", {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
+            secure: isProduction,
             expires: new Date(0),
-            sameSite: "strict",
+            sameSite: isProduction ? "none" : "lax",
+            path: "/",
         });
         return { message: "Admin logged out successfully" };
     }

@@ -25,6 +25,22 @@ router.post('/resend-otp', userControllerr.resendOtp);
 router.post('/forgot-password', userControllerr.forgotPassword);
 router.put('/reset-password/:token', userControllerr.resetPassword);
 router.post('/refresh-token', userControllerr.refreshToken);
+router.get('/auth-status', (req, res) => {
+    const cookies = req.cookies;
+    const hasAccessToken = !!cookies?.accessToken;
+    const hasRefreshToken = !!cookies?.refreshToken;
+    res.json({
+        authenticated: hasAccessToken || hasRefreshToken,
+        hasAccessToken,
+        hasRefreshToken,
+        nodeEnv: process.env.NODE_ENV,
+        cookieNames: Object.keys(cookies || {}),
+        headers: {
+            origin: req.headers.origin,
+            cookie: req.headers.cookie ? 'present' : 'missing'
+        }
+    });
+});
 router.post('/save-location', AuthMiddleware_1.AuthMiddleware, userControllerr.saveLocationController);
 router.route('/profile')
     .get(AuthMiddleware_1.AuthMiddleware, userControllerr.getUserProfile)
