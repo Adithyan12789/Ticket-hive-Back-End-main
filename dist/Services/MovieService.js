@@ -13,22 +13,58 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MovieService = void 0;
+const CastModel_1 = require("../Models/CastModel");
 const inversify_1 = require("inversify");
+async function resolveCastImages(casts, existingImages) {
+    if (!casts || casts.length === 0)
+        return [];
+    try {
+        const allCasts = await CastModel_1.Cast.find({ name: { $in: casts } });
+        const castMap = new Map();
+        allCasts.forEach(c => {
+            if (c.name && c.image) {
+                castMap.set(c.name.trim().toLowerCase(), c.image);
+            }
+        });
+        return casts.map((actorName, idx) => {
+            if (existingImages && existingImages[idx]) {
+                return existingImages[idx];
+            }
+            return castMap.get(actorName.trim().toLowerCase()) || "";
+        });
+    }
+    catch (err) {
+        console.error("Error resolving cast images:", err);
+        return existingImages || [];
+    }
+}
 let MovieService = class MovieService {
     constructor(movieRepository) {
         this.movieRepository = movieRepository;
     }
     async addMovie(movieData) {
+        if (movieData.casts && (!movieData.castsImages || movieData.castsImages.length === 0)) {
+            movieData.castsImages = await resolveCastImages(movieData.casts, movieData.castsImages);
+        }
         return await this.movieRepository.addMovieRepo(movieData);
     }
     async getAllMoviesService() {
         const result = await this.movieRepository.getAllMovies();
+        for (const movie of result) {
+            if (movie.casts && (!movie.castsImages || movie.castsImages.length === 0 || movie.castsImages.some(img => !img))) {
+                movie.castsImages = await resolveCastImages(movie.casts, movie.castsImages);
+            }
+        }
         return result;
     }
     async findMovieById(movieId) {
-        return await this.movieRepository.findMovieById(movieId);
+        const movie = await this.movieRepository.findMovieById(movieId);
+        if (movie && movie.casts && (!movie.castsImages || movie.castsImages.length === 0 || movie.castsImages.some(img => !img))) {
+            movie.castsImages = await resolveCastImages(movie.casts, movie.castsImages);
+        }
+        return movie;
     }
-    async updateMovieData(id, updateData, posterFile, movieImageFiles, castImageFiles) {
+    async updateMovieData(id, updateData, posterFile, movieImageFiles, castImageFiles, bannerFiles) {
         try {
             const movie = await this.movieRepository.findMovieById(id);
             if (!movie) {
@@ -57,8 +93,14 @@ let MovieService = class MovieService {
             if (movieImageFiles && movieImageFiles.length > 0) {
                 movie.images = movieImageFiles.map(file => file.filename);
             }
+            if (bannerFiles && bannerFiles.length > 0) {
+                movie.banners = bannerFiles.map(file => file.filename);
+            }
             if (castImageFiles && castImageFiles.length > 0) {
                 movie.castsImages = castImageFiles.map(file => file.filename);
+            }
+            else if (movie.casts && movie.casts.length > 0) {
+                movie.castsImages = await resolveCastImages(movie.casts, movie.castsImages);
             }
             const updatedMovie = await movie.save();
             return updatedMovie;

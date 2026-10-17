@@ -104,6 +104,7 @@ let MovieController = class MovieController {
         this.updateMovieHandler = async (req, res) => {
             const { id } = req.params;
             const posterFile = req.files["poster"]?.[0];
+            const bannerFiles = req.files["banners"] || [];
             const movieImageFiles = req.files["movieImages"] || [];
             const castImageFiles = req.files["castImages"] || [];
             const genres = this.parseArrayField(req.body.genre || req.body["genre[]"]);
@@ -120,7 +121,7 @@ let MovieController = class MovieController {
                 releaseDate: req.body.releaseDate
             };
             try {
-                const updatedMovie = await this.movieService.updateMovieData(id, updateData, posterFile, movieImageFiles, castImageFiles);
+                const updatedMovie = await this.movieService.updateMovieData(id, updateData, posterFile, movieImageFiles, castImageFiles, bannerFiles);
                 if (!updatedMovie) {
                     res.status(404).json({ message: "Movie not found for updating" });
                     return;

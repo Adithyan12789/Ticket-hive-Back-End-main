@@ -118,6 +118,7 @@ export class MovieController {
     const { id } = req.params;
 
     const posterFile = (req.files as any)["poster"]?.[0];
+    const bannerFiles = (req.files as any)["banners"] || [];
     const movieImageFiles = (req.files as any)["movieImages"] || [];
     const castImageFiles = (req.files as any)["castImages"] || [];
 
@@ -142,7 +143,8 @@ export class MovieController {
         updateData,
         posterFile,
         movieImageFiles,
-        castImageFiles
+        castImageFiles,
+        bannerFiles
       );
 
       if (!updatedMovie) {

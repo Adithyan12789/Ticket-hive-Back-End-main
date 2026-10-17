@@ -11,7 +11,8 @@ export interface IMovieService {
         updateData: Partial<IMovie>,
         posterFile: { filename: string } | null,
         movieImageFiles: { filename: string }[],
-        castImageFiles: { filename: string }[]    
+        castImageFiles: { filename: string }[],
+        bannerFiles?: { filename: string }[]
     ): Promise<IMovie | null>;
     deleteMovieService(id: string): Promise<IMovie | null>;
 }
