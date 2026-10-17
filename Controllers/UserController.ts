@@ -32,7 +32,7 @@ export class UserController {
       res.cookie("accessToken", accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV !== "development",
-        sameSite: "strict",
+        sameSite: process.env.NODE_ENV === "development" ? "strict" : "none",
         maxAge: 15 * 60 * 1000, // 15 minutes
       });
 
@@ -457,7 +457,7 @@ export class UserController {
       res.cookie("accessToken", "", {
         httpOnly: true,
         secure: process.env.NODE_ENV !== "development",
-        sameSite: "strict",
+        sameSite: process.env.NODE_ENV === "development" ? "strict" : "none",
         expires: new Date(0),
       });
 
@@ -465,7 +465,7 @@ export class UserController {
       res.cookie("refreshToken", "", {
         httpOnly: true,
         secure: process.env.NODE_ENV !== "development",
-        sameSite: "strict",
+        sameSite: process.env.NODE_ENV === "development" ? "strict" : "none",
         expires: new Date(0),
       });
 

@@ -674,7 +674,7 @@ export class TheaterController {
       res.cookie("theaterOwnerJwt", "", {
         httpOnly: true,
         secure: process.env.NODE_ENV !== "development",
-        sameSite: "strict",
+        sameSite: process.env.NODE_ENV === "development" ? "strict" : "none",
         expires: new Date(0),
       });
       res.status(200).json({ message: "Theater Owner Logged out" });

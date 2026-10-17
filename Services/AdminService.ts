@@ -287,7 +287,7 @@ export class AdminService {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       expires: new Date(0),
-      sameSite: "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
     });
     return { message: "Admin logged out successfully" };
   }
