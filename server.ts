@@ -34,6 +34,8 @@ EmailUtil.verifyConnection().catch((err) => {
 
 const port = process.env.PORT || 5000;
 
+app.set('trust proxy', 1);
+
 app.use(cors({
   origin: (origin, callback) => {
     const allowedProductionOrigins = [
@@ -52,7 +54,11 @@ app.use(cors({
       return callback(null, true);
     }
 
-    if (allowedProductionOrigins.includes(normalizedOrigin)) {
+    if (
+      allowedProductionOrigins.includes(normalizedOrigin) ||
+      /\.vercel\.app$/.test(normalizedOrigin) ||
+      /\.onrender\.com$/.test(normalizedOrigin)
+    ) {
       callback(null, true);
     } else {
       console.warn(`CORS blocked origin: ${origin}`);
@@ -158,4 +164,4 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   });
 });
 
-server.listen(port, () => console.log(`Server Is Running On Port http://localhost:${port}/`));
+server.listen(Number(port), "0.0.0.0", () => console.log(`Server Is Running On Port http://0.0.0.0:${port}/`));

@@ -31,6 +31,7 @@ EmailUtil_1.default.verifyConnection().catch((err) => {
     console.error("[Startup] OTP emails will fail. Check EMAIL_USER and EMAIL_PASS in .env");
 });
 const port = process.env.PORT || 5000;
+Socket_1.app.set('trust proxy', 1);
 Socket_1.app.use((0, cors_1.default)({
     origin: (origin, callback) => {
         const allowedProductionOrigins = [
@@ -43,7 +44,9 @@ Socket_1.app.use((0, cors_1.default)({
         if (/^http:\/\/localhost(:\d+)?$/.test(normalizedOrigin)) {
             return callback(null, true);
         }
-        if (allowedProductionOrigins.includes(normalizedOrigin)) {
+        if (allowedProductionOrigins.includes(normalizedOrigin) ||
+            /\.vercel\.app$/.test(normalizedOrigin) ||
+            /\.onrender\.com$/.test(normalizedOrigin)) {
             callback(null, true);
         }
         else {
@@ -121,5 +124,5 @@ Socket_1.app.use((err, req, res, next) => {
         error: typeof err === 'string' ? err : err.message,
     });
 });
-Socket_1.server.listen(port, () => console.log(`Server Is Running On Port http://localhost:${port}/`));
+Socket_1.server.listen(Number(port), "0.0.0.0", () => console.log(`Server Is Running On Port http://0.0.0.0:${port}/`));
 //# sourceMappingURL=server.js.map
